@@ -32,15 +32,14 @@ cd vantage
 then you can give `vantage.sh` permission and copy the script to your bin directory
 
 ```bash
-sudo cp ./vantage.sh /usr/bin/vantage
-sudo chmod a+rx /usr/bin/vantage
+sudo ./install.sh
 ```
 
 ## :hotsprings: Uninstall
 to uninstall vantage you can easily delete the script
 
 ```bash
-sudo rm /usr/bin/vantage
+sudo ./uninstall.sh
 ```
 
 ---
