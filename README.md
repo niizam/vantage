@@ -29,14 +29,14 @@ first of all, you need to clone the repository with this command:
 git clone https://github.com/niizam/vantage.git
 cd vantage
 ```
-then you can give `vantage.sh` permission and copy the script to your bin directory
+then you can easily run this command
 
 ```bash
 sudo ./install.sh
 ```
 
 ## :hotsprings: Uninstall
-to uninstall vantage you can easily delete the script
+to uninstall vantage you can just run this
 
 ```bash
 sudo ./uninstall.sh
