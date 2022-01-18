@@ -21,7 +21,10 @@ if they are not already installed you can install them using your package manage
 ```bash
 sudo pacman -S zenity xorg-xinput networkmanager
 ``` 
-
+for Debian derivatives (Ubuntu,Mint,etc)
+```bash
+sudo apt install zenity xinput
+```
 ## :computer: Installation
 
 first of all, you need to clone the repository with this command:
