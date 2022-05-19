@@ -43,7 +43,8 @@ sudo sh ./install.sh
 to uninstall vantage you can just run this
 
 ```bash
-sudo ./uninstall.sh
+chmod +x ./uninstall.sh
+sudo sh ./uninstall.sh
 ```
 
 ---
