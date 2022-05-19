@@ -35,7 +35,8 @@ cd vantage
 then you can easily run this command
 
 ```bash
-sudo ./install.sh
+chmod +x ./install.sh
+sudo sh ./install.sh
 ```
 
 ## :hotsprings: Uninstall
