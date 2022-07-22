@@ -2,16 +2,16 @@
 This shell script helps you to provide [Lenovo Vantage](https://www.lenovo.com/us/en/software/vantage) in GNU/Linux operating system.
 
 ## :rocket: Features
-* Battery Conservation Mode (Charge battery to 60%)
+* Conservation Mode (Charge battery to 60%)
 * ~Rapid Charge~
-* Thermal Mode (Quiet, Balanced and Performance mode)
+* Thermal(Fan) Mode (Quiet, Balanced and Performance mode)
   * ~GPU Overclocking in Performance Mode~
 * ~Hybrid Mode (Disable integrated graphics)~
 * FN Button
-* Camera privacy switch
-* Microphone privacy switch
+* Camera Privacy Switch
+* Microphone Privacy Switch
 * Touchpad Lock
-* Wi-Fi switch
+* Wi-Fi Switch
 
 ## :warning: Requirements
 * `zenity`
@@ -47,6 +47,7 @@ Then you can easily run this command:
 chmod +x ./install.sh
 sudo sh ./install.sh
 ```
+Run "Lenovo Vantage" from your applications list.
 
 ## :hotsprings: Uninstall
 To uninstall Lenovo Vantage, you can just run this:
