@@ -28,4 +28,4 @@ case $distro in
     ;;
 esac
 
-echo "Installation successful."
+echo "Requirements are installed"
