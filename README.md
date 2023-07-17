@@ -13,6 +13,27 @@ This shell script helps you to provide [Lenovo Vantage](https://www.lenovo.com/u
 * Touchpad Lock
 * Wi-Fi Switch
 
+## :computer: Installation
+
+First of all, you need to clone the repository with this command:
+```bash
+git clone https://github.com/niizam/vantage.git
+cd vantage
+```
+Then you can easily run this command:
+
+```bash
+sudo make install
+```
+Run "Lenovo Vantage" from your applications list.
+
+## :hotsprings: Uninstall
+To uninstall Lenovo Vantage, you can just run this:
+
+```bash
+sudo make uninstall
+```
+
 ## :warning: Requirements
 * `zenity`
 * `xorg-xinput` or `xinput`
@@ -34,27 +55,4 @@ For Fedora:
 ```bash
 sudo dnf install zenity xinput NetworkManager pipewire-pulseaudio
 ```
-## :computer: Installation
-
-First of all, you need to clone the repository with this command:
-```bash
-git clone https://github.com/niizam/vantage.git
-cd vantage
-```
-Then you can easily run this command:
-
-```bash
-chmod +x ./install.sh
-sudo sh ./install.sh
-```
-Run "Lenovo Vantage" from your applications list.
-
-## :hotsprings: Uninstall
-To uninstall Lenovo Vantage, you can just run this:
-
-```bash
-chmod +x ./uninstall.sh
-sudo sh ./uninstall.sh
-```
-
 ---
