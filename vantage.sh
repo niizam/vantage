@@ -1,134 +1,84 @@
 #!/bin/sh
 #Requirement: zenity, xinput, networkmanager, pulseaudio or pipewire-pulse
 #Author: Nizam (nizam@europe.com)
-
 export vpc="/sys/bus/platform/devices/VPC2004:*"
+
+get_wifi_status() {
+    nmcli radio wifi | awk '{print ($1 == "enabled") ? "Status: On" : "Status: Off"}'
+}
+
+get_conserv_mode_status() {
+    cat $vpc/conservation_mode | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
+}
+
+get_camera_power_status() {
+    lsmod | grep -q 'uvcvideo' && echo "Status: On" || echo "Status: Off"
+}
+
+get_fan_mode_status() {
+    cat $vpc/fan_mode | awk '{
+        if ($1 == "133" || $1 == "0") print "Status: Super Silent";
+        else if ($1 == "1") print "Status: Standard";
+        else if ($1 == "2") print "Status: Dust Cleaning";
+        else if ($1 == "3") print "Status: Efficient Thermal Dissipation";
+    }'
+}
+
+get_touchpad_status() {
+    string=$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')
+    xinput --list-props $string | grep "Device Enabled" | awk '{print ($3 == "1") ? "Status: On" : "Status: Off"}'
+}
+
+get_fn_lock_status() {
+    cat $vpc/fn_lock | awk '{print ($1 == "1") ? "Status: Off" : "Status: On"}'
+}
+
+get_microphone_status() {
+    pactl list | awk '/^Source/,/^$/{if ($1 == "Mute:" && $2 == "yes") print "Status: Muted"}' || echo "Status: Active"
+}
+
 file=$(zenity --height 350 --width 250 --list --title "Lenovo Vantage" --text "Choose one" \
 --column Menu "Conservation Mode" "Touchpad" "FN Lock" "Camera Power" "Fan Mode" "Microphone" "WiFi" )
 
-rdio=$(nmcli radio wifi)
-rdstatus=$(if [ "$rdio" = "enabled" ]; then
-    echo "Status: On"
-else
-    echo "Status: Off"
-fi
-)
-
-cm=$(cat $vpc/conservation_mode)
-cmstatus=$(if [ "$cm" = "1" ]; then
-    echo "Status: On"
-else
-    echo "Status: Off"
-fi
-)
-
-cpwr=$(lsmod | grep 'uvcvideo')
-cpstatus=$(if [ "$cpwr" = "" ]; then
-    echo "Status: Off"
-else
-    echo "Status: On"
-fi
-)
-
-fanmd=$(cat $vpc/fan_mode)
-fmstatus=$(if [ "$fanmd" = "133" ]; then
-    echo "Status: Super Silent"
-elif [ "$fanmd" = "0" ]; then
-    echo "Status: Super Silent"
-elif [ "$fanmd" = "1" ]; then
-    echo "Status: Standard"
-elif [ "$fanmd" = "2" ]; then
-    echo "Status: Dust Cleaning"
-elif [ "$fanmd" = "3" ]; then
-    echo "Status: Efficient Thermal Dissipation"
-fi
-)
-
-string=$(xinput list | grep Touchpad | cut -d '=' -f2 | awk  '{print $1}')
-toupd=$(xinput --list-props $string | grep "Device Enabled" | cut -d ":" -f2 | awk '{print $1}')
-tpstatus=$(if [ "$toupd" = "1" ]; then
-    echo "Status: On"
-else
-    echo "Status: Off"
-fi
-)
-
-fnlc=$(cat $vpc/fn_lock)
-fnstatus=$(if [ "$fnlc" = "1" ]; then
-    echo "Status: Off"
-else
-    echo "Status: On"
-fi
-)
-
-mcphn=$(pactl list | sed -n '/^Source/,/^$/p' | grep "Mute: yes" | cut -d ":" -f2 | awk '{print $1}')
-micstatus=$(if [ "$mcphn" = "yes" ]; then
-    echo "Status: Muted"
-else
-    echo "Status: Active"
-fi
-)
-
-if [ "$file" = "Conservation Mode" ]; then
-    conservation=$(zenity --list --title "Conservation Mode" --text "$cmstatus" --column Menu "Activate" "Deactivate")
-elif [ "$file" = "Camera Power" ]; then
-    camerapwr=$(zenity --list --title "Camera Power" --text "$cpstatus" --column Menu "Activate" "Deactivate")
-elif [ "$file" = "Fan Mode" ]; then
-    fanmode=$(zenity --list --title "Fan Mode" --text "$fmstatus" --column Menu "Super Silent" "Standard" "Dust Cleaning" "Efficient Thermal Dissipation")
-elif [ "$file" = "Touchpad" ]; then
-    tcpd=$(zenity --list --title "Touchpad" --text "$tpstatus" --column Menu "Activate" "Deactivate")
-elif [ "$file" = "FN Lock" ]; then
-    fnlck=$(zenity --list --title "FN Lock" --text "$fnstatus" --column Menu "Activate" "Deactivate")
-elif [ "$file" = "Microphone" ]; then
-    mcrph=$(zenity --list --title "Microphone" --text "$micstatus" --column Menu "Mute" "Unmute")
-elif [ "$file" = "WiFi" ]; then
-    wfi=$(zenity --list --title "FN Lock" --text "$rdstatus" --column Menu "Activate" "Deactivate")
-fi
-
-if [ "$conservation" = "Activate" ]; then
-    echo "1" | pkexec tee $vpc/conservation_mode
-elif [ "$conservation" = "Deactivate" ]; then
-    echo "0" | pkexec tee $vpc/conservation_mode
-fi
-
-if [ "$camerapwr" = "Activate" ]; then
-    echo "1" | pkexec modprobe uvcvideo
-elif [ "$camerapwr" = "Deactivate" ]; then
-    echo "0" | pkexec modprobe -r uvcvideo
-fi
-
-if [ "$fanmode" = "Super Silent" ]; then
-    echo "0" | pkexec tee $vpc/fan_mode
-elif [ "$fanmode" = "Standard" ]; then
-    echo "1" | pkexec tee $vpc/fan_mode
-elif [ "$fanmode" = "Dust Cleaning" ]; then
-    echo "2" | pkexec tee $vpc/fan_mode
-elif [ "$fanmode" = "Efficient Thermal Dissipation" ]; then
-    echo "4" | pkexec tee $vpc/fan_mode
-fi
-
-if [ "$tcpd" = "Activate" ]; then
-    xinput enable $string
-elif [ "$tcpd" = "Deactivate" ]; then
-    xinput disable $string
-fi
-
-if [ "$fnlck" = "Deactivate" ]; then
-    echo "1" | pkexec tee $vpc/fn_lock
-elif [ "$fnlck" = "Activate" ]; then
-    echo "0" | pkexec tee $vpc/fn_lock
-fi
-
-if [ "$mcrph" = "Mute" ]; then
-    pactl set-source-mute @DEFAULT_SOURCE@ 1
-elif [ "$mcrph" = "Unmute" ]; then
-    pactl set-source-mute @DEFAULT_SOURCE@ 0
-fi
-
-if [ "$wfi" = "Activate" ]; then
-    nmcli radio wifi on
-elif [ "$wfi" = "Deactivate" ]; then
-    nmcli radio wifi off
-fi
-
-clear
+case "$file" in
+    "Conservation Mode")
+        choice=$(zenity --list --title "Conservation Mode" --text "$(get_conserv_mode_status)" --column Menu "Activate" "Deactivate")
+        if [ "$choice" = "Activate" ]; then echo "1" | pkexec tee $vpc/conservation_mode
+        else echo "0" | pkexec tee $vpc/conservation_mode; fi
+        ;;
+    "Camera Power")
+        choice=$(zenity --list --title "Camera Power" --text "$(get_camera_power_status)" --column Menu "Activate" "Deactivate")
+        if [ "$choice" = "Activate" ]; then pkexec modprobe uvcvideo
+        else pkexec modprobe -r uvcvideo; fi
+        ;;
+    "Fan Mode")
+        choice=$(zenity --list --title "Fan Mode" --text "$(get_fan_mode_status)" --column Menu "Super Silent" "Standard" "Dust Cleaning" "Efficient Thermal Dissipation")
+        case "$choice" in
+            "Super Silent") echo "0" | pkexec tee $vpc/fan_mode ;;
+            "Standard") echo "1" | pkexec tee $vpc/fan_mode ;;
+            "Dust Cleaning") echo "2" | pkexec tee $vpc/fan_mode ;;
+            "Efficient Thermal Dissipation") echo "4" | pkexec tee $vpc/fan_mode ;;
+        esac
+        ;;
+    "Touchpad")
+        choice=$(zenity --list --title "Touchpad" --text "$(get_touchpad_status)" --column Menu "Activate" "Deactivate")
+        string=$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')
+        if [ "$choice" = "Activate" ]; then xinput enable $string
+        else xinput disable $string; fi
+        ;;
+    "FN Lock")
+        choice=$(zenity --list --title "FN Lock" --text "$(get_fn_lock_status)" --column Menu "Activate" "Deactivate")
+        if [ "$choice" = "Activate" ]; then echo "0" | pkexec tee $vpc/fn_lock
+        else echo "1" | pkexec tee $vpc/fn_lock; fi
+        ;;
+    "Microphone")
+        choice=$(zenity --list --title "Microphone" --text "$(get_microphone_status)" --column Menu "Mute" "Unmute")
+        if [ "$choice" = "Mute" ]; then pactl set-source-mute @DEFAULT_SOURCE@ 1
+        else pactl set-source-mute @DEFAULT_SOURCE@ 0; fi
+        ;;
+    "WiFi")
+        choice=$(zenity --list --title "WiFi" --text "$(get_wifi_status)" --column Menu "Activate" "Deactivate")
+        if [ "$choice" = "Activate" ]; then nmcli radio wifi on
+        else nmcli radio wifi off; fi
+        ;;
+esac
