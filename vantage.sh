@@ -29,8 +29,8 @@ get_fan_mode_status() {
 }
 
 get_touchpad_status() {
-    string=$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')
-    xinput --list-props $string | grep "Device Enabled" | awk '{print ($3 == "1") ? "Status: On" : "Status: Off"}'
+    string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
+    xinput --list-props "$string" | grep "Device Enabled" | cut -d ':' -f2 | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
 }
 
 get_fn_lock_status() {
