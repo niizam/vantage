@@ -5,20 +5,12 @@
 
 vpc="/sys/bus/platform/devices/VPC2004\:*"
 
-get_wifi_status() {
-    nmcli radio wifi | awk '{print ($1 == "enabled") ? "Status: On" : "Status: Off"}'
-}
-
 get_conserv_mode_status() {
     cat $vpc/conservation_mode | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
 }
 
 get_usb_charging_status() {
     cat $vpc/usb_charging | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
-}
-
-get_camera_status() {
-    lsmod | grep -q 'uvcvideo' && echo "Status: On" || echo "Status: Off"
 }
 
 get_fan_mode_status() {
@@ -30,17 +22,25 @@ get_fan_mode_status() {
     }'
 }
 
+get_fn_lock_status() {
+    cat $vpc/fn_lock | awk '{print ($1 == "1") ? "Status: Off" : "Status: On"}'
+}
+
+get_camera_status() {
+    lsmod | grep -q 'uvcvideo' && echo "Status: On" || echo "Status: Off"
+}
+
+get_microphone_status() {
+    pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print ($2 == "yes") ? "Status: Muted" : "Status: Active"}'
+}
+
 get_touchpad_status() {
     string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
     xinput --list-props "$string" | grep "Device Enabled" | cut -d ':' -f2 | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
 }
 
-get_fn_lock_status() {
-    cat $vpc/fn_lock | awk '{print ($1 == "1") ? "Status: Off" : "Status: On"}'
-}
-
-get_microphone_status() {
-    pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print ($2 == "yes") ? "Status: Muted" : "Status: Active"}'
+get_wifi_status() {
+    nmcli radio wifi | awk '{print ($1 == "enabled") ? "Status: On" : "Status: Off"}'
 }
 
 filter_status() {
@@ -75,13 +75,6 @@ case "$file" in
             "Deactivate") echo "0" | pkexec tee $vpc/usb_charging ;;
         esac
         ;;
-    "Camera")
-        choice=$(zenity --list --title "Camera" --text "$(get_camera_status)" --column Menu "Activate" "Deactivate")
-        case "$choice" in
-            "Activate") pkexec modprobe uvcvideo ;;
-            "Deactivate") pkexec modprobe -r uvcvideo ;;
-        esac
-        ;;
     "Fan Mode")
         choice=$(zenity --list --title "Fan Mode" --text "$(get_fan_mode_status)" --column Menu "Super Silent" "Standard" "Dust Cleaning" "Efficient Thermal Dissipation")
         case "$choice" in
@@ -91,14 +84,6 @@ case "$file" in
             "Efficient Thermal Dissipation") echo "4" | pkexec tee $vpc/fan_mode ;;
         esac
         ;;
-    "Touchpad")
-        choice=$(zenity --list --title "Touchpad" --text "$(get_touchpad_status)" --column Menu "Activate" "Deactivate")
-        string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
-        case "$choice" in
-            "Activate") xinput enable "$string" ;;
-            "Deactivate") xinput disable "$string" ;;
-        esac
-        ;;
     "FN Lock")
         choice=$(zenity --list --title "FN Lock" --text "$(get_fn_lock_status)" --column Menu "Activate" "Deactivate")
         case "$choice" in
@@ -106,11 +91,26 @@ case "$file" in
             "Deactivate") echo "1" | pkexec tee $vpc/fn_lock ;;
         esac
         ;;
+    "Camera")
+        choice=$(zenity --list --title "Camera" --text "$(get_camera_status)" --column Menu "Activate" "Deactivate")
+        case "$choice" in
+            "Activate") pkexec modprobe uvcvideo ;;
+            "Deactivate") pkexec modprobe -r uvcvideo ;;
+        esac
+        ;;
     "Microphone")
         choice=$(zenity --list --title "Microphone" --text "$(get_microphone_status)" --column Menu "Mute" "Unmute")
         case "$choice" in
             "Mute") pactl set-source-mute @DEFAULT_SOURCE@ 1 ;;
             "Unmute") pactl set-source-mute @DEFAULT_SOURCE@ 0 ;;
+        esac
+        ;;
+    "Touchpad")
+        choice=$(zenity --list --title "Touchpad" --text "$(get_touchpad_status)" --column Menu "Activate" "Deactivate")
+        string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
+        case "$choice" in
+            "Activate") xinput enable "$string" ;;
+            "Deactivate") xinput disable "$string" ;;
         esac
         ;;
     "WiFi")
