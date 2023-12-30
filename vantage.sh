@@ -11,7 +11,7 @@ get_conserv_mode_status() {
     cat $vpc/conservation_mode | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
 }
 
-get_camera_power_status() {
+get_camera_status() {
     lsmod | grep -q 'uvcvideo' && echo "Status: On" || echo "Status: Off"
 }
 
@@ -40,7 +40,7 @@ get_microphone_status() {
 while :; do
 
 file=$(zenity --height 350 --width 250 --list --title "Lenovo Vantage" --text "Choose one" \
---column Menu "Conservation Mode" "Touchpad" "FN Lock" "Camera Power" "Fan Mode" "Microphone" "WiFi" )
+--column Menu "Conservation Mode" "Touchpad" "FN Lock" "Camera" "Fan Mode" "Microphone" "WiFi" )
 
 case "$file" in
     "Conservation Mode")
@@ -50,8 +50,8 @@ case "$file" in
             "Deactivate") echo "0" | pkexec tee $vpc/conservation_mode ;;
         esac
         ;;
-    "Camera Power")
-        choice=$(zenity --list --title "Camera Power" --text "$(get_camera_power_status)" --column Menu "Activate" "Deactivate")
+    "Camera")
+        choice=$(zenity --list --title "Camera" --text "$(get_camera_status)" --column Menu "Activate" "Deactivate")
         case "$choice" in
             "Activate") pkexec modprobe uvcvideo ;;
             "Deactivate") pkexec modprobe -r uvcvideo ;;
