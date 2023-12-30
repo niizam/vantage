@@ -45,13 +45,17 @@ file=$(zenity --height 350 --width 250 --list --title "Lenovo Vantage" --text "C
 case "$file" in
     "Conservation Mode")
         choice=$(zenity --list --title "Conservation Mode" --text "$(get_conserv_mode_status)" --column Menu "Activate" "Deactivate")
-        if [ "$choice" = "Activate" ]; then echo "1" | pkexec tee $vpc/conservation_mode
-        else echo "0" | pkexec tee $vpc/conservation_mode; fi
+        case "$choice" in
+            "Activate") echo "1" | pkexec tee $vpc/conservation_mode ;;
+            "Deactivate") echo "0" | pkexec tee $vpc/conservation_mode ;;
+        esac
         ;;
     "Camera Power")
         choice=$(zenity --list --title "Camera Power" --text "$(get_camera_power_status)" --column Menu "Activate" "Deactivate")
-        if [ "$choice" = "Activate" ]; then pkexec modprobe uvcvideo
-        else pkexec modprobe -r uvcvideo; fi
+        case "$choice" in
+            "Activate") pkexec modprobe uvcvideo ;;
+            "Deactivate") pkexec modprobe -r uvcvideo ;;
+        esac
         ;;
     "Fan Mode")
         choice=$(zenity --list --title "Fan Mode" --text "$(get_fan_mode_status)" --column Menu "Super Silent" "Standard" "Dust Cleaning" "Efficient Thermal Dissipation")
@@ -64,24 +68,32 @@ case "$file" in
         ;;
     "Touchpad")
         choice=$(zenity --list --title "Touchpad" --text "$(get_touchpad_status)" --column Menu "Activate" "Deactivate")
-        string=$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')
-        if [ "$choice" = "Activate" ]; then xinput enable $string
-        else xinput disable $string; fi
+        string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
+        case "$choice" in
+            "Activate") xinput enable "$string" ;;
+            "Deactivate") xinput disable "$string" ;;
+        esac
         ;;
     "FN Lock")
         choice=$(zenity --list --title "FN Lock" --text "$(get_fn_lock_status)" --column Menu "Activate" "Deactivate")
-        if [ "$choice" = "Activate" ]; then echo "0" | pkexec tee $vpc/fn_lock
-        else echo "1" | pkexec tee $vpc/fn_lock; fi
+        case "$choice" in
+            "Activate") echo "0" | pkexec tee $vpc/fn_lock ;;
+            "Deactivate") echo "1" | pkexec tee $vpc/fn_lock ;;
+        esac
         ;;
     "Microphone")
         choice=$(zenity --list --title "Microphone" --text "$(get_microphone_status)" --column Menu "Mute" "Unmute")
-        if [ "$choice" = "Mute" ]; then pactl set-source-mute @DEFAULT_SOURCE@ 1
-        else pactl set-source-mute @DEFAULT_SOURCE@ 0; fi
+        case "$choice" in
+            "Mute") pactl set-source-mute @DEFAULT_SOURCE@ 1 ;;
+            "Unmute") pactl set-source-mute @DEFAULT_SOURCE@ 0 ;;
+        esac
         ;;
     "WiFi")
         choice=$(zenity --list --title "WiFi" --text "$(get_wifi_status)" --column Menu "Activate" "Deactivate")
-        if [ "$choice" = "Activate" ]; then nmcli radio wifi on
-        else nmcli radio wifi off; fi
+        case "$choice" in
+            "Activate") nmcli radio wifi on ;;
+            "Deactivate") nmcli radio wifi off ;;
+        esac
         ;;
     *)
         exit
