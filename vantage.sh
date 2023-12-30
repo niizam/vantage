@@ -43,10 +43,22 @@ get_microphone_status() {
     pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print ($2 == "yes") ? "Status: Muted" : "Status: Active"}'
 }
 
+filter_status() {
+    cut -d ' ' -f1 --complement
+}
+
 while :; do
 
-file=$(zenity --height 350 --width 250 --list --title "Lenovo Vantage" --text "Choose one" \
---column Menu "Conservation Mode" "Always-On USB" "Fan Mode" "FN Lock" "Camera" "Microphone" "Touchpad" "WiFi" )
+file=$(zenity --height 350 --width 350 --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" \
+    "Conservation Mode" "$(get_conserv_mode_status | filter_status)" \
+    "Always-On USB" "$(get_usb_charging_status | filter_status)" \
+    "Fan Mode" "$(get_fan_mode_status | filter_status)" \
+    "FN Lock" "$(get_fn_lock_status | filter_status)" \
+    "Camera" "$(get_camera_status | filter_status)" \
+    "Microphone" "$(get_microphone_status | filter_status)" \
+    "Touchpad" "$(get_touchpad_status | filter_status)" \
+    "WiFi" "$(get_wifi_status | filter_status)" \
+)
 
 case "$file" in
     "Conservation Mode")
