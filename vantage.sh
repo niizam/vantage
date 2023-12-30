@@ -11,6 +11,10 @@ get_conserv_mode_status() {
     cat $vpc/conservation_mode | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
 }
 
+get_usb_charging_status() {
+    cat $vpc/usb_charging | awk '{print ($1 == "1") ? "Status: On" : "Status: Off"}'
+}
+
 get_camera_status() {
     lsmod | grep -q 'uvcvideo' && echo "Status: On" || echo "Status: Off"
 }
@@ -40,7 +44,7 @@ get_microphone_status() {
 while :; do
 
 file=$(zenity --height 350 --width 250 --list --title "Lenovo Vantage" --text "Choose one" \
---column Menu "Conservation Mode" "Fan Mode" "FN Lock" "Camera" "Microphone" "Touchpad" "WiFi" )
+--column Menu "Conservation Mode" "Always-On USB" "Fan Mode" "FN Lock" "Camera" "Microphone" "Touchpad" "WiFi" )
 
 case "$file" in
     "Conservation Mode")
@@ -48,6 +52,13 @@ case "$file" in
         case "$choice" in
             "Activate") echo "1" | pkexec tee $vpc/conservation_mode ;;
             "Deactivate") echo "0" | pkexec tee $vpc/conservation_mode ;;
+        esac
+        ;;
+    "Always-On USB")
+        choice=$(zenity --list --title "Always-On USB" --text "$(get_usb_charging_status)" --column Menu "Activate" "Deactivate")
+        case "$choice" in
+            "Activate") echo "1" | pkexec tee $vpc/usb_charging ;;
+            "Deactivate") echo "0" | pkexec tee $vpc/usb_charging ;;
         esac
         ;;
     "Camera")
