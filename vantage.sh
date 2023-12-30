@@ -40,7 +40,7 @@ get_microphone_status() {
 while :; do
 
 file=$(zenity --height 350 --width 250 --list --title "Lenovo Vantage" --text "Choose one" \
---column Menu "Conservation Mode" "Touchpad" "FN Lock" "Camera" "Fan Mode" "Microphone" "WiFi" )
+--column Menu "Conservation Mode" "Fan Mode" "FN Lock" "Camera" "Microphone" "Touchpad" "WiFi" )
 
 case "$file" in
     "Conservation Mode")
