@@ -37,6 +37,8 @@ get_microphone_status() {
     pactl list | awk '/^Source/,/^$/{if ($1 == "Mute:" && $2 == "yes") print "Status: Muted"}' || echo "Status: Active"
 }
 
+while :; do
+
 file=$(zenity --height 350 --width 250 --list --title "Lenovo Vantage" --text "Choose one" \
 --column Menu "Conservation Mode" "Touchpad" "FN Lock" "Camera Power" "Fan Mode" "Microphone" "WiFi" )
 
@@ -81,4 +83,9 @@ case "$file" in
         if [ "$choice" = "Activate" ]; then nmcli radio wifi on
         else nmcli radio wifi off; fi
         ;;
+    *)
+        exit
+        ;;
 esac
+
+done
