@@ -1,6 +1,8 @@
 #!/bin/sh
+
 #Requirement: zenity, xinput, networkmanager, pulseaudio or pipewire-pulse
-#Author: Nizam (nizam@europe.com)
+#Authors: Nizam (nizam@europe.com), Lanchon (https://github.com/Lanchon)
+
 vpc="/sys/bus/platform/devices/VPC2004\:*"
 
 get_wifi_status() {
