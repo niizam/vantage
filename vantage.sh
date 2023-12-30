@@ -20,7 +20,7 @@ get_fan_mode_status() {
         if ($1 == "133" || $1 == "0") print "Status: Super Silent";
         else if ($1 == "1") print "Status: Standard";
         else if ($1 == "2") print "Status: Dust Cleaning";
-        else if ($1 == "3") print "Status: Efficient Thermal Dissipation";
+        else if ($1 == "4") print "Status: Efficient Thermal Dissipation";
     }'
 }
 
