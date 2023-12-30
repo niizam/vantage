@@ -34,7 +34,7 @@ get_fn_lock_status() {
 }
 
 get_microphone_status() {
-    pactl list | awk '/^Source/,/^$/{if ($1 == "Mute:" && $2 == "yes") print "Status: Muted"}' || echo "Status: Active"
+    pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print ($2 == "yes") ? "Status: Muted" : "Status: Active"}'
 }
 
 while :; do
