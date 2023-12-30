@@ -1,7 +1,7 @@
 #!/bin/sh
 #Requirement: zenity, xinput, networkmanager, pulseaudio or pipewire-pulse
 #Author: Nizam (nizam@europe.com)
-export vpc="/sys/bus/platform/devices/VPC2004:*"
+vpc="/sys/bus/platform/devices/VPC2004\:*"
 
 get_wifi_status() {
     nmcli radio wifi | awk '{print ($1 == "enabled") ? "Status: On" : "Status: Off"}'
