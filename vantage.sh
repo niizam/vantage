@@ -5,6 +5,8 @@
 
 vpc="/sys/bus/platform/devices/VPC2004\:*"
 
+touchpad_id="$(xinput list | grep "Touchpad" | cut -d '=' -f2 | awk '{print $1}')"
+
 get_conserv_mode_status() {
     cat $vpc/conservation_mode | awk '{print ($1 == "1") ? "On" : "Off"}'
 }
@@ -35,8 +37,7 @@ get_microphone_status() {
 }
 
 get_touchpad_status() {
-    string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
-    xinput --list-props "$string" | grep "Device Enabled" | cut -d ':' -f2 | awk '{print ($1 == "1") ? "On" : "Off"}'
+    xinput --list-props "$touchpad_id" | grep "Device Enabled" | cut -d ':' -f2 | awk '{print ($1 == "1") ? "On" : "Off"}'
 }
 
 get_wifi_status() {
@@ -117,10 +118,9 @@ case "$file" in
         ;;
     "Touchpad")
         choice=$(show_submenu_on_off "Touchpad" "$(get_touchpad_status)")
-        string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
         case "$choice" in
-            "$SUBMENU_ON") xinput enable "$string" ;;
-            "$SUBMENU_OFF") xinput disable "$string" ;;
+            "$SUBMENU_ON") xinput enable "$touchpad_id" ;;
+            "$SUBMENU_OFF") xinput disable "$touchpad_id" ;;
         esac
         ;;
     "WiFi")
