@@ -7,7 +7,7 @@ VPC="/sys/bus/platform/devices/VPC2004\:*"
 
 touchpad_id="$(xinput list | grep "Touchpad" | cut -d '=' -f2 | awk '{print $1}')"
 
-get_conserv_mode_status() {
+get_conservation_mode_status() {
     cat $VPC/conservation_mode | awk '{print ($1 == "1") ? "On" : "Off"}'
 }
 
@@ -60,7 +60,7 @@ show_submenu_on_off() {
 main() {
     while :; do
         local options=()
-        test -f $VPC/conservation_mode && options+=("Conservation Mode" "$(get_conserv_mode_status)")
+        test -f $VPC/conservation_mode && options+=("Conservation Mode" "$(get_conservation_mode_status)")
         test -f $VPC/usb_charging && options+=("Always-On USB" "$(get_usb_charging_status)")
         test -f $VPC/fan_mode && options+=("Fan Mode" "$(get_fan_mode_status)")
         test -f $VPC/fn_lock && options+=("FN Lock" "$(get_fn_lock_status)")
@@ -72,7 +72,7 @@ main() {
         local menu="$(zenity --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" "${options[@]}" --height 350 --width 350)"
         case "$menu" in
             "Conservation Mode")
-                local submenu="$(show_submenu_on_off "Conservation Mode" "$(get_conserv_mode_status)")"
+                local submenu="$(show_submenu_on_off "Conservation Mode" "$(get_conservation_mode_status)")"
                 case "$submenu" in
                     "$SUBMENU_ON") echo "1" | pkexec tee $VPC/conservation_mode ;;
                     "$SUBMENU_OFF") echo "0" | pkexec tee $VPC/conservation_mode ;;
