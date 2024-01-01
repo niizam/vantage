@@ -69,7 +69,7 @@ main() {
         test -n "$touchpad_id" && options+=("Touchpad" "$(get_touchpad_status)")
         which nmcli >/dev/null && options+=("WiFi" "$(get_wifi_status)")
 
-        local menu="$(zenity --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" "${options[@]}" --height 350 --width 350)"
+        local menu="$(zenity --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" "${options[@]}" --height 340 --width 350)"
         case "$menu" in
             "Conservation Mode")
                 local submenu="$(show_submenu_on_off "Conservation Mode" "$(get_conservation_mode_status)")"
@@ -86,7 +86,7 @@ main() {
                 esac
                 ;;
             "Fan Mode")
-                local submenu="$(show_submenu "Fan Mode" "$(get_fan_mode_status)" \
+                local submenu="$(show_submenu "Fan Mode" "$(get_fan_mode_status)" --height 250 --width 300 \
                     "Super Silent" \
                     "Standard" \
                     "Dust Cleaning" \
