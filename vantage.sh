@@ -60,14 +60,15 @@ show_submenu_on_off() {
 main() {
     while :; do
         local options=()
-        options+=("Conservation Mode" "$(get_conserv_mode_status)")
-        options+=("Always-On USB" "$(get_usb_charging_status)")
-        options+=("Fan Mode" "$(get_fan_mode_status)")
-        options+=("FN Lock" "$(get_fn_lock_status)")
-        options+=("Camera" "$(get_camera_status)")
-        options+=("Microphone" "$(get_microphone_status)")
-        options+=("Touchpad" "$(get_touchpad_status)")
-        options+=("WiFi" "$(get_wifi_status)")
+        test -f $VPC/conservation_mode && options+=("Conservation Mode" "$(get_conserv_mode_status)")
+        test -f $VPC/usb_charging && options+=("Always-On USB" "$(get_usb_charging_status)")
+        test -f $VPC/fan_mode && options+=("Fan Mode" "$(get_fan_mode_status)")
+        test -f $VPC/fn_lock && options+=("FN Lock" "$(get_fn_lock_status)")
+        modinfo -n uvcvideo >/dev/null && options+=("Camera" "$(get_camera_status)")
+        which pactl >/dev/null && options+=("Microphone" "$(get_microphone_status)")
+        test -n "$touchpad_id" && options+=("Touchpad" "$(get_touchpad_status)")
+        which nmcli >/dev/null && options+=("WiFi" "$(get_wifi_status)")
+
         local menu="$(zenity --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" "${options[@]}" --height 350 --width 350)"
         case "$menu" in
             "Conservation Mode")
