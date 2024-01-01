@@ -3,20 +3,20 @@
 #Requirement: zenity, xinput, networkmanager, pulseaudio or pipewire-pulse
 #Authors: Nizam (nizam@europe.com), Lanchon (https://github.com/Lanchon)
 
-vpc="/sys/bus/platform/devices/VPC2004\:*"
+VPC="/sys/bus/platform/devices/VPC2004\:*"
 
 touchpad_id="$(xinput list | grep "Touchpad" | cut -d '=' -f2 | awk '{print $1}')"
 
 get_conserv_mode_status() {
-    cat $vpc/conservation_mode | awk '{print ($1 == "1") ? "On" : "Off"}'
+    cat $VPC/conservation_mode | awk '{print ($1 == "1") ? "On" : "Off"}'
 }
 
 get_usb_charging_status() {
-    cat $vpc/usb_charging | awk '{print ($1 == "1") ? "On" : "Off"}'
+    cat $VPC/usb_charging | awk '{print ($1 == "1") ? "On" : "Off"}'
 }
 
 get_fan_mode_status() {
-    cat $vpc/fan_mode | awk '{
+    cat $VPC/fan_mode | awk '{
         if ($1 == "133" || $1 == "0") print "Super Silent";
         else if ($1 == "1") print "Standard";
         else if ($1 == "2") print "Dust Cleaning";
@@ -25,7 +25,7 @@ get_fan_mode_status() {
 }
 
 get_fn_lock_status() {
-    cat $vpc/fn_lock | awk '{print ($1 == "1") ? "Off" : "On"}'
+    cat $VPC/fn_lock | awk '{print ($1 == "1") ? "Off" : "On"}'
 }
 
 get_camera_status() {
@@ -74,15 +74,15 @@ main() {
             "Conservation Mode")
                 local submenu="$(show_submenu_on_off "Conservation Mode" "$(get_conserv_mode_status)")"
                 case "$submenu" in
-                    "$SUBMENU_ON") echo "1" | pkexec tee $vpc/conservation_mode ;;
-                    "$SUBMENU_OFF") echo "0" | pkexec tee $vpc/conservation_mode ;;
+                    "$SUBMENU_ON") echo "1" | pkexec tee $VPC/conservation_mode ;;
+                    "$SUBMENU_OFF") echo "0" | pkexec tee $VPC/conservation_mode ;;
                 esac
                 ;;
             "Always-On USB")
                 local submenu="$(show_submenu_on_off "Always-On USB" "$(get_usb_charging_status)")"
                 case "$submenu" in
-                    "$SUBMENU_ON") echo "1" | pkexec tee $vpc/usb_charging ;;
-                    "$SUBMENU_OFF") echo "0" | pkexec tee $vpc/usb_charging ;;
+                    "$SUBMENU_ON") echo "1" | pkexec tee $VPC/usb_charging ;;
+                    "$SUBMENU_OFF") echo "0" | pkexec tee $VPC/usb_charging ;;
                 esac
                 ;;
             "Fan Mode")
@@ -93,17 +93,17 @@ main() {
                     "Efficient Thermal Dissipation" \
                 )"
                 case "$submenu" in
-                    "Super Silent") echo "0" | pkexec tee $vpc/fan_mode ;;
-                    "Standard") echo "1" | pkexec tee $vpc/fan_mode ;;
-                    "Dust Cleaning") echo "2" | pkexec tee $vpc/fan_mode ;;
-                    "Efficient Thermal Dissipation") echo "4" | pkexec tee $vpc/fan_mode ;;
+                    "Super Silent") echo "0" | pkexec tee $VPC/fan_mode ;;
+                    "Standard") echo "1" | pkexec tee $VPC/fan_mode ;;
+                    "Dust Cleaning") echo "2" | pkexec tee $VPC/fan_mode ;;
+                    "Efficient Thermal Dissipation") echo "4" | pkexec tee $VPC/fan_mode ;;
                 esac
                 ;;
             "FN Lock")
                 local submenu="$(show_submenu_on_off "FN Lock" "$(get_fn_lock_status)")"
                 case "$submenu" in
-                    "$SUBMENU_ON") echo "0" | pkexec tee $vpc/fn_lock ;;
-                    "$SUBMENU_OFF") echo "1" | pkexec tee $vpc/fn_lock ;;
+                    "$SUBMENU_ON") echo "0" | pkexec tee $VPC/fn_lock ;;
+                    "$SUBMENU_OFF") echo "1" | pkexec tee $VPC/fn_lock ;;
                 esac
                 ;;
             "Camera")
