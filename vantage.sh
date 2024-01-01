@@ -47,6 +47,20 @@ filter_status() {
     cut -d ' ' -f1 --complement
 }
 
+SUBMENU_ON="Activate"
+SUBMENU_OFF="Deactivate"
+
+show_submenu() {
+    local title="$1"
+    local status="$2"
+    shift 2
+    zenity --list --title "$title" --text "$status" --column "Menu" "$@"
+}
+
+show_submenu_on_off() {
+    show_submenu "$@" "$SUBMENU_ON" "$SUBMENU_OFF"
+}
+
 while :; do
 
 file=$(zenity --height 350 --width 350 --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" \
@@ -62,21 +76,21 @@ file=$(zenity --height 350 --width 350 --list --title "Lenovo Vantage" --text "S
 
 case "$file" in
     "Conservation Mode")
-        choice=$(zenity --list --title "Conservation Mode" --text "$(get_conserv_mode_status)" --column Menu "Activate" "Deactivate")
+        choice=$(show_submenu_on_off "Conservation Mode" "$(get_conserv_mode_status)")
         case "$choice" in
-            "Activate") echo "1" | pkexec tee $vpc/conservation_mode ;;
-            "Deactivate") echo "0" | pkexec tee $vpc/conservation_mode ;;
+            "$SUBMENU_ON") echo "1" | pkexec tee $vpc/conservation_mode ;;
+            "$SUBMENU_OFF") echo "0" | pkexec tee $vpc/conservation_mode ;;
         esac
         ;;
     "Always-On USB")
-        choice=$(zenity --list --title "Always-On USB" --text "$(get_usb_charging_status)" --column Menu "Activate" "Deactivate")
+        choice=$(show_submenu_on_off "Always-On USB" "$(get_usb_charging_status)")
         case "$choice" in
-            "Activate") echo "1" | pkexec tee $vpc/usb_charging ;;
-            "Deactivate") echo "0" | pkexec tee $vpc/usb_charging ;;
+            "$SUBMENU_ON") echo "1" | pkexec tee $vpc/usb_charging ;;
+            "$SUBMENU_OFF") echo "0" | pkexec tee $vpc/usb_charging ;;
         esac
         ;;
     "Fan Mode")
-        choice=$(zenity --list --title "Fan Mode" --text "$(get_fan_mode_status)" --column Menu "Super Silent" "Standard" "Dust Cleaning" "Efficient Thermal Dissipation")
+        choice=$(show_submenu "Fan Mode" "$(get_fan_mode_status)" "Super Silent" "Standard" "Dust Cleaning" "Efficient Thermal Dissipation")
         case "$choice" in
             "Super Silent") echo "0" | pkexec tee $vpc/fan_mode ;;
             "Standard") echo "1" | pkexec tee $vpc/fan_mode ;;
@@ -85,39 +99,39 @@ case "$file" in
         esac
         ;;
     "FN Lock")
-        choice=$(zenity --list --title "FN Lock" --text "$(get_fn_lock_status)" --column Menu "Activate" "Deactivate")
+        choice=$(show_submenu_on_off "FN Lock" "$(get_fn_lock_status)")
         case "$choice" in
-            "Activate") echo "0" | pkexec tee $vpc/fn_lock ;;
-            "Deactivate") echo "1" | pkexec tee $vpc/fn_lock ;;
+            "$SUBMENU_ON") echo "0" | pkexec tee $vpc/fn_lock ;;
+            "$SUBMENU_OFF") echo "1" | pkexec tee $vpc/fn_lock ;;
         esac
         ;;
     "Camera")
-        choice=$(zenity --list --title "Camera" --text "$(get_camera_status)" --column Menu "Activate" "Deactivate")
+        choice=$(show_submenu_on_off "Camera" "$(get_camera_status)")
         case "$choice" in
-            "Activate") pkexec modprobe uvcvideo ;;
-            "Deactivate") pkexec modprobe -r uvcvideo ;;
+            "$SUBMENU_ON") pkexec modprobe uvcvideo ;;
+            "$SUBMENU_OFF") pkexec modprobe -r uvcvideo ;;
         esac
         ;;
     "Microphone")
-        choice=$(zenity --list --title "Microphone" --text "$(get_microphone_status)" --column Menu "Mute" "Unmute")
+        choice=$(show_submenu "Microphone" "$(get_microphone_status)" "Mute" "Unmute")
         case "$choice" in
             "Mute") pactl set-source-mute @DEFAULT_SOURCE@ 1 ;;
             "Unmute") pactl set-source-mute @DEFAULT_SOURCE@ 0 ;;
         esac
         ;;
     "Touchpad")
-        choice=$(zenity --list --title "Touchpad" --text "$(get_touchpad_status)" --column Menu "Activate" "Deactivate")
+        choice=$(show_submenu_on_off "Touchpad" "$(get_touchpad_status)")
         string="$(xinput list | grep Touchpad | cut -d '=' -f2 | awk '{print $1}')"
         case "$choice" in
-            "Activate") xinput enable "$string" ;;
-            "Deactivate") xinput disable "$string" ;;
+            "$SUBMENU_ON") xinput enable "$string" ;;
+            "$SUBMENU_OFF") xinput disable "$string" ;;
         esac
         ;;
     "WiFi")
-        choice=$(zenity --list --title "WiFi" --text "$(get_wifi_status)" --column Menu "Activate" "Deactivate")
+        choice=$(show_submenu_on_off "WiFi" "$(get_wifi_status)")
         case "$choice" in
-            "Activate") nmcli radio wifi on ;;
-            "Deactivate") nmcli radio wifi off ;;
+            "$SUBMENU_ON") nmcli radio wifi on ;;
+            "$SUBMENU_OFF") nmcli radio wifi off ;;
         esac
         ;;
     *)
