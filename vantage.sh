@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #Requirement: zenity, xinput, networkmanager, pulseaudio or pipewire-pulse
 #Authors: Nizam (nizam@europe.com), Lanchon (https://github.com/Lanchon)
@@ -50,8 +50,7 @@ SUBMENU_OFF="Deactivate"
 show_submenu() {
     local title="$1"
     local status="$2"
-    shift 2
-    zenity --list --title "$title" --text "Status: $status" --column "Menu" "$@"
+    zenity --list --title "$title" --text "Status: $status" --column "Menu" "${@:3}"
 }
 
 show_submenu_on_off() {
@@ -60,16 +59,16 @@ show_submenu_on_off() {
 
 main() {
     while :; do
-        local menu="$(zenity --height 350 --width 350 --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" \
-            "Conservation Mode" "$(get_conserv_mode_status)" \
-            "Always-On USB" "$(get_usb_charging_status)" \
-            "Fan Mode" "$(get_fan_mode_status)" \
-            "FN Lock" "$(get_fn_lock_status)" \
-            "Camera" "$(get_camera_status)" \
-            "Microphone" "$(get_microphone_status)" \
-            "Touchpad" "$(get_touchpad_status)" \
-            "WiFi" "$(get_wifi_status)" \
-        )"
+        local options=()
+        options+=("Conservation Mode" "$(get_conserv_mode_status)")
+        options+=("Always-On USB" "$(get_usb_charging_status)")
+        options+=("Fan Mode" "$(get_fan_mode_status)")
+        options+=("FN Lock" "$(get_fn_lock_status)")
+        options+=("Camera" "$(get_camera_status)")
+        options+=("Microphone" "$(get_microphone_status)")
+        options+=("Touchpad" "$(get_touchpad_status)")
+        options+=("WiFi" "$(get_wifi_status)")
+        local menu="$(zenity --list --title "Lenovo Vantage" --text "Select function:" --column "Function" --column "Status" "${options[@]}" --height 350 --width 350)"
         case "$menu" in
             "Conservation Mode")
                 local submenu="$(show_submenu_on_off "Conservation Mode" "$(get_conserv_mode_status)")"
