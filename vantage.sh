@@ -3,6 +3,8 @@
 #Requirement: zenity, xinput, networkmanager, pulseaudio or pipewire-pulse
 #Authors: Nizam (nizam@europe.com), Lanchon (https://github.com/Lanchon)
 
+ENABLE_FAN_MODE=1
+
 VPC="/sys/bus/platform/devices/VPC2004\:*"
 
 touchpad_id="$(xinput list | grep "Touchpad" | cut -d '=' -f2 | awk '{print $1}')"
@@ -62,7 +64,7 @@ main() {
         local options=()
         test -f $VPC/conservation_mode && options+=("Conservation Mode" "$(get_conservation_mode_status)")
         test -f $VPC/usb_charging && options+=("Always-On USB" "$(get_usb_charging_status)")
-        test -f $VPC/fan_mode && options+=("Fan Mode" "$(get_fan_mode_status)")
+        test -f $VPC/fan_mode && test "$ENABLE_FAN_MODE" = 1 && options+=("Fan Mode" "$(get_fan_mode_status)")
         test -f $VPC/fn_lock && options+=("FN Lock" "$(get_fn_lock_status)")
         modinfo -n uvcvideo >/dev/null && options+=("Camera" "$(get_camera_status)")
         which pactl >/dev/null && options+=("Microphone" "$(get_microphone_status)")
