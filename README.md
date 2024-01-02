@@ -5,6 +5,7 @@ This shell script helps you to provide [Lenovo Vantage](https://www.lenovo.com/u
 ![image](https://github.com/niizam/vantage/assets/45286708/df7bf5a2-ce30-4e71-8608-5a8ac270ad72)
 * Conservation Mode (Charge battery to 60%)
 * ~Rapid Charge~
+* Always-On USB (Enable USB power output when the system is in low-power modes)
 * Thermal(Fan) Mode (Quiet, Balanced and Performance mode)
   * ~GPU Overclocking in Performance Mode~
 * ~Hybrid Mode (Disable integrated graphics)~
