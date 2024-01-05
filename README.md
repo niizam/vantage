@@ -2,16 +2,14 @@
 This shell script helps you to provide [Lenovo Vantage](https://www.lenovo.com/us/en/software/vantage) in GNU/Linux operating system.
 
 ## :rocket: Features
-![image](https://github.com/niizam/vantage/assets/45286708/df7bf5a2-ce30-4e71-8608-5a8ac270ad72)
-* Conservation Mode (Charge battery to 60%)
-* ~Rapid Charge~
-* Thermal(Fan) Mode (Quiet, Balanced and Performance mode)
-  * ~GPU Overclocking in Performance Mode~
-* ~Hybrid Mode (Disable integrated graphics)~
-* FN Button
+![image](images/main_menu.png)
+* Conservation Mode (Limit battery charge to prolong its life)
+* Always-On USB (Enable USB power output when the system is in low-power modes)
+* Thermal/Fan Mode (Quiet, balanced and performance modes)
+* FN Key Lock
 * Camera Privacy Switch
 * Microphone Privacy Switch
-* Touchpad Lock
+* Touchpad Switch
 * Wi-Fi Switch
 
 ## :computer: Installation
