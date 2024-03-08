@@ -22,6 +22,11 @@ case $distro in
     rpm -q zenity xinput NetworkManager pipewire-pulseaudio &> /dev/null || sudo dnf install zenity xinput NetworkManager pipewire-pulseaudio
     ;;
 
+    "opensuse-tumbleweed")
+    echo "Installing on OpenSuse"
+    rpm -q zenity xinput NetworkManager pipewire-pulseaudio &> /dev/null || sudo zypper install zenity xinput NetworkManager pipewire-pulseaudio
+    ;;
+
   *)
     echo "Unknown Distro, exiting."
     exit 1
