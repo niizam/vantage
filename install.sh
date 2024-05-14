@@ -23,6 +23,12 @@ case $distro in
     echo "Installing on Debian or derivative"
     dpkg -s zenity xinput &> /dev/null || sudo apt install zenity xinput
     ;;
+  
+  # Entry for Linux Mint 21.3 Edge
+  "ubuntu debian")
+    echo "Installing on Linux Mint Edge"
+    dpkg -s zenity xinput &> /dev/null || sudo apt install zenity xinput
+    ;;  
 
   "fedora")
     echo "Installing on Fedora"
