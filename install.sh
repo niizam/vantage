@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Function to detect package manager
+detect_package_manager() {
+    if command -v pacman &> /dev/null; then
+        echo "pacman"
+    elif command -v apt &> /dev/null; then
+        echo "apt"
+    elif command -v dnf &> /dev/null; then
+        echo "dnf"
+    elif command -v zypper &> /dev/null; then
+        echo "zypper"
+    else
+        echo "unknown"
+    fi
+}
+
 # check for the distro
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -35,14 +50,37 @@ case $distro in
     rpm -q zenity xinput NetworkManager pipewire-pulseaudio &> /dev/null || sudo dnf install zenity xinput NetworkManager pipewire-pulseaudio
     ;;
 
-    "opensuse-tumbleweed")
+  "opensuse-tumbleweed")
     echo "Installing on OpenSuse"
     rpm -q zenity xinput NetworkManager pipewire-pulseaudio &> /dev/null || sudo zypper install zenity xinput NetworkManager pipewire-pulseaudio
     ;;
 
   *)
-    echo "Unknown Distro, exiting."
-    exit 1
+    echo "Unknown Distro, attempting package manager detection..."
+    package_manager=$(detect_package_manager)
+    
+    case $package_manager in
+        "pacman")
+            echo "Detected pacman package manager"
+            pacman -Qi zenity xorg-xinput networkmanager &> /dev/null || sudo pacman -S zenity xorg-xinput networkmanager
+            ;;
+        "apt")
+            echo "Detected apt package manager"
+            dpkg -s zenity xinput &> /dev/null || sudo apt install zenity xinput
+            ;;
+        "dnf")
+            echo "Detected dnf package manager"
+            rpm -q zenity xinput NetworkManager pipewire-pulseaudio &> /dev/null || sudo dnf install zenity xinput NetworkManager pipewire-pulseaudio
+            ;;
+        "zypper")
+            echo "Detected zypper package manager"
+            rpm -q zenity xinput NetworkManager pipewire-pulseaudio &> /dev/null || sudo zypper install zenity xinput NetworkManager pipewire-pulseaudio
+            ;;
+        *)
+            echo "Unable to detect compatible package manager, exiting."
+            exit 1
+            ;;
+    esac
     ;;
 esac
 
